@@ -1,0 +1,1 @@
+# manage_my_sessions.nvim
