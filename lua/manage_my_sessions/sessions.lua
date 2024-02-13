@@ -49,8 +49,8 @@ command("ManageMySessions", function(opts)
 	end
 end, {
 	desc = "Manage My Sessions",
-	complete = function(ArgLead, CmdLine, CursorPos)
-		return { "fzf", "popup", " " }
+	complete = function()
+		return { "fzf", "popup" }
 	end,
 	nargs = "?",
 })

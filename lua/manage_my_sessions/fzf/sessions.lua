@@ -1,5 +1,5 @@
 local config = require("manage_my_sessions.config")
-local command = vim.api.nvim_create_user_command
+
 ---@class Fzf
 ---@field fzf_exec function()
 
@@ -17,21 +17,20 @@ local M = {}
 
 function M:create_command()
 	local session = config.values.sessions
-	local has_fzf, fzf = hasFZF()
-	local command = ""
+	local command = config.values.search_command
 	local dirs = ""
 	for _, v in pairs(session) do
 		local last_char = string.sub(v[1], -1)
 		if last_char ~= "/" or last_char ~= "\\" then
 			v[1] = v[1] .. "/"
 		end
-		dirs = string.format("%s%s %s", dirs, command, v[1])
+		dirs = dirs .. " " .. v[1]
 	end
-	command = string.format("rg --files --max-depth 2 --null%s | xargs -0 dirname | uniq", dirs)
+	command = string.gsub(command, "{sessions}", dirs)
+	print(command)
 	M.command = command
 end
 function M:run()
-	-- coroutine.wrap(function()
 	local has_fzf, fzf = hasFZF()
 	if not has_fzf then
 		print("fzf not found")
@@ -52,20 +51,16 @@ function M:run()
 					local expanded = vim.fn.fnamemodify(v[1], ":p")
 					local first_expanded = vim.fn.fnamemodify(selected[1], ":p:h")
 					local second_expanded = vim.fn.fnamemodify(selected[1], ":p:h:h")
+
 					expanded = string.gsub(expanded, "\\", "/")
 					first_expanded = string.gsub(first_expanded, "\\", "/") .. "/"
 					second_expanded = string.gsub(second_expanded, "\\", "/") .. "/"
-					if expanded == first_expanded then
-						actions = v
-						break
-					end
-					if expanded == second_expanded then
+					if expanded == first_expanded or expanded == second_expanded then
 						actions = v
 						break
 					end
 				end
 				actions.before()
-				---@diagnostic disable-next-line: param-type-mismatch
 				local is_ok, _ = pcall(actions.select, selected[1])
 				if not is_ok then
 					print("invalid path: " .. selected[1])
@@ -78,6 +73,5 @@ function M:run()
 			end,
 		},
 	})
-	-- end)()
 end
 return M

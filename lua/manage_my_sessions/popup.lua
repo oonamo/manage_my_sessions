@@ -30,11 +30,6 @@ function M.plenary_popup(session_items, callback)
 
 	local height = #session_items + 1
 	local width = math.floor(vim.o.columns / 2)
-
-	local function CloseWin()
-		vim.api.nvim_win_close(Win_id, true)
-	end
-
 	local cb = function(id, session)
 		callback(id, session)
 	end

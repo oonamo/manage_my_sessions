@@ -11,25 +11,22 @@ local M = {}
 ---@class ManageMySessionsConfig
 ---@field sessions sessions[]
 ---@field term_cd boolean
+---@field search_command string
 
 ---@return ManageMySessionsConfig
 function M.defaults()
 	return {
 		sessions = {},
 		term_cd = false,
+		search_command = "rg --files --max-depth 2 --null {sessions} | xargs -0 dirname | uniq",
 	}
 end
 
----@param path string
-local function before()
-	print("before")
-end
+local function before() end
 
 ---@param path string
-local function after(path)
-	print("after")
-	print(path)
-end
+---@diagnostic disable-next-line: unused-local
+local function after(path) end
 
 ---@param path string
 local function select(path)
@@ -40,18 +37,24 @@ end
 function M.merge_configs(opts)
 	opts = opts or {}
 	local sessions = {}
-	for k, v in pairs(opts.sessions) do
+	for _, v in pairs(opts.sessions) do
 		if type(v) == "string" then
 			local session = {
 				v,
+				before = before,
+				after = after,
+				select = select,
+			}
+			table.insert(sessions, session)
+		end
+		if type(v) == "table" then
+			local session = {
+				v[1],
 				before = v.before or before,
 				after = v.after or after,
 				select = v.select or select,
 			}
 			table.insert(sessions, session)
-		end
-		if type(v) == "table" then
-			table.insert(sessions, v)
 		end
 	end
 	local config = M.defaults()
