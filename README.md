@@ -1,4 +1,4 @@
-# manage_my_sessions.nvim
+# manage_my_sessions
 A simple session switcher for neovim
 <!--toc:start-->
 - [Installation](#installation)
@@ -12,7 +12,7 @@ Default config **requires _ripgrep_**
 **Lazy**
 ```lua
 return {
-        "oonamo/manage_my_sessions.nvim",
+        "oonamo/manage_my_sessions",
         dependencies = { 
             "nvim-lua/plenary.nvim", -- Optional, see dependencies
             "ibhagwan/fzf-lua" -- Optional
@@ -34,7 +34,7 @@ use("oonamo/manage_my_sessions",
         "ibhagwan/fzf-lua",
     },
     config = function()
-        require("manage_my_sessions.nvim").setup({
+        require("manage_my_sessions").setup({
             sessions = {
                 "~/projects"
             }
@@ -50,7 +50,7 @@ use("oonamo/manage_my_sessions",
 ## Usage
 ### Create custom hooks
 ```lua
-local mms = require("manage_my_sessions.nvim")
+local mms = require("manage_my_sessions")
 mms.setup({
     sessions = {
         "~/projects", -- Use the default actions to switch to ~/projects
