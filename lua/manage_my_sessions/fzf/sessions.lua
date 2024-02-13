@@ -27,9 +27,10 @@ function M:create_command()
 		dirs = dirs .. " " .. v[1]
 	end
 	command = string.gsub(command, "{sessions}", dirs)
-	print(command)
 	M.command = command
 end
+
+-- FIX: Return selected to not repeat this again
 function M:run()
 	local has_fzf, fzf = hasFZF()
 	if not has_fzf then
@@ -67,7 +68,7 @@ function M:run()
 					return
 				end
 				if config.values.term_cd then
-					vim.cmd("!cd " .. vim.fn.expand(selected[1]))
+					vim.cmd("silent !cd " .. vim.fn.expand(selected[1]))
 				end
 				actions.after(selected[1])
 			end,

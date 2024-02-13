@@ -15,32 +15,30 @@ end
 command("ManageMySessions", function(opts)
 	if opts.fargs[1] == nil or opts.fargs[1] == "popup" then
 		local cb = function(_, session)
-			if session ~= nil then
-				-- FIX: valiate path does not validate
-				if utils.validate_path(session) then
-					vim.schedule(function()
-						local ok
-						local session_actions
-						for _, v in pairs(config.values.sessions) do
-							if v[1] == session then
-								session_actions = v
-								session_actions.before()
-								ok, _ = pcall(session_actions.select, session)
-								if config.values.term_cd then
-									vim.cmd("!cd " .. vim.fn.expand(session))
-								end
-								break
+			-- FIX: valiate path does not validate
+			if session ~= nil and utils.validate_path(session) then
+				vim.schedule(function()
+					local ok
+					local session_actions
+					for _, v in pairs(config.values.sessions) do
+						if v[1] == session then
+							session_actions = v
+							session_actions.before()
+							ok, _ = pcall(session_actions.select, session)
+							if config.values.term_cd then
+								vim.cmd("silent !cd " .. vim.fn.expand(session))
 							end
+							break
 						end
-						if not ok then
-							print("invalid path: " .. session)
-							return
-						end
-						session_actions.after(session)
-					end)
-				else
-					print("invalid path: " .. session)
-				end
+					end
+					if not ok then
+						print("invalid path: " .. session)
+						return
+					end
+					session_actions.after(session)
+				end)
+			else
+				print("invalid path: " .. session)
 			end
 		end
 		popup.open_popup(M.get_sessions(), cb)
